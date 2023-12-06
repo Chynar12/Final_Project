@@ -1,47 +1,51 @@
+using System.Data;
 using System.Security.Cryptography;
 
 public class CrossWord
 {
     List<string> justWords = new List<string>();
-    private Random randNumberRow;
-    private Random randNumberColumn;
+    private Random randomNumber;
     private Random randNumberWord;
-    private int rowIndexRandom;
-    private int columnIndexRandom;
     public int randomNumberForChoosingTheWord;
     public string word;
     public char[,] grid;
 
+    public int Row {get; }
+    public int Column{get; }
 
-    public CrossWord(string fileName)
+
+    public CrossWord(string[] words, int row = 15, int column = 15)
     {
-        randNumberRow = new Random();
-        rowIndexRandom = randNumberRow.Next(0, 10);
-        randNumberColumn = new Random();
-        columnIndexRandom = randNumberColumn.Next(0, 10);
-
-
+        Row = row;
+        Column = column;
+        randomNumber = new Random();
 
         CreateGrid();
-        List<string> words = GetWordsForCrossWord(fileName);
-        string oneWord = GetRandomWordFromList(words);
-        PlaceWordHorizontal(oneWord, rowIndexRandom, columnIndexRandom);
-        PrintGrid();
-        Console.ReadLine();
+        GetWordsForCrossWord(words);
+
     }
 
 
+    public void PlaceAllWordsRandomly()
+    {
+        var counter = justWords.Count();
+        for (int i = 0; i < counter; i++)
+        {
+            var rowIndexRandom = randomNumber.Next(0, 10);
+            var columnIndexRandom = randomNumber.Next(0, 10);
+            string oneWord = GetRandomWordFromList();
+            PlaceWordHorizontal(oneWord, rowIndexRandom, columnIndexRandom);
+        }
+    }
+
     public char[,] CreateGrid()
     {
-
-        int row = 15;
-        int column = 15;
-        char[,] grid = new char[row, column];
-        for (int i = 0; i < row; i++)
+        grid = new char[Row, Column];
+        for (int i = 0; i < Row; i++)
         {
-            for (int j = 0; j < column; j++)
+            for (int j = 0; j < Column; j++)
             {
-                grid[i, j] = 'a';
+                grid[i, j] = ' ';
             }
         }
         return grid;
@@ -51,26 +55,18 @@ public class CrossWord
 
     public void PlaceWordHorizontal(string input, int rowIndexRandom, int columnIndexRandom)
     {
-        int row = 15;
-        int column = 15;
-        if (input.Length + columnIndexRandom > row)
+        if (input.Length + columnIndexRandom > Row)
         {
-            int outside = column - 1 - columnIndexRandom;
-            throw new Exception($"\n the word u try to enter is {input}, last column of word is: {input[outside]} last valid column is: {column - 1}");
+            int outside = Column - 1 - columnIndexRandom;
+            throw new Exception($"\n the word u try to enter is {input}, last column of word is: {input[outside]} last valid column is: {Column - 1}");
         }
         else
         {
-            try
+            for (int i = 0; i < input.Length; i++)
             {
-                for (int i = 0; i < input.Length; i++)
-                {
-                    grid[rowIndexRandom, columnIndexRandom + i] = input[i];
-                }
+                grid[rowIndexRandom, columnIndexRandom + i] = input[i];
             }
-            catch
-            {
 
-            }
         }
     }
 
@@ -78,62 +74,48 @@ public class CrossWord
 
     public void PrintGrid()
     {
-        int raw = 14;
-        int column = 14;
-        try
+        if (grid == null)
         {
-            for (int i = 0; i < raw; i++)
+            throw new NullReferenceException("cannot print grid. grid is null");
+        }
+        for (int i = 0; i < Row; i++)
+        {
+
+            for (int j = 0; j < Column; j++)
             {
-
-                for (int j = 0; j < column; j++)
-                {
-                    Console.Write(grid[i, j] + " ");
-                }
-                Console.WriteLine();
+                Console.Write(grid[i, j] + " ");
             }
+            Console.WriteLine();
         }
-        catch
-        {
 
-        }
     }
 
 
-public List<string> GetWordsForCrossWord(string setName)
-{
-
-    if (File.Exists(setName))
+    public List<string> GetWordsForCrossWord(string[] listOfWords)
     {
-        string[] listOfWords = File.ReadAllLines(setName);
-        for (int i = 0; i < listOfWords.Length; i++)
-        {
-            string[] wordsSplited = listOfWords[i].Split("-");
-            string word1 = wordsSplited[0];
-            justWords.Add(word1);
-        }
-        foreach (string word2 in justWords)
-        {
-            Console.WriteLine(word2);
-        }
+            for (int i = 0; i < listOfWords.Length; i++)
+            {
+                string[] wordsSplited = listOfWords[i].Split("-");
+                string word1 = wordsSplited[0];
+                justWords.Add(word1);
+            }
+            foreach (string word2 in justWords)
+            {
+                Console.WriteLine(word2);
+            }
 
+        return justWords;
     }
-    else
+
+
+    public string GetRandomWordFromList()
     {
-        Console.WriteLine("File does not exist!");
+        int numberOfWords = justWords.Count();
+        randomNumberForChoosingTheWord = randomNumber.Next(0, numberOfWords);
+        Console.WriteLine($"the random num for word {randomNumberForChoosingTheWord}");
+        Console.WriteLine($"the word chosen {justWords[randomNumberForChoosingTheWord]}");
+        string word = justWords[randomNumberForChoosingTheWord];
+        justWords.Remove(word);
+        return word;
     }
-    return justWords;
-}
-
-
-public string GetRandomWordFromList(List<string> list)
-{
-    int numberOfWords = justWords.Count();
-    randNumberWord = new Random();
-    randomNumberForChoosingTheWord = randNumberWord.Next(1, numberOfWords);
-    Console.WriteLine($"the random num for word {randomNumberForChoosingTheWord}");
-    Console.WriteLine($"the word chosen {list[randomNumberForChoosingTheWord]}");
-    string word = list[randomNumberForChoosingTheWord];
-    justWords.Remove(word);
-    return word;
-}
 }

@@ -5,12 +5,21 @@ ListOfWords list = new ListOfWords();
 Practice play = new Practice();
 
 
+
 Console.Clear();
+
 while (true)
 {
+    VocabularyReminder reminder = new VocabularyReminder();
+
+    // Set the time for the reminder
+    DateTime reminderTime = DateTime.Today.AddHours(18).AddMinutes(30);
+
+    // Start the reminder
+    reminder.StartReminder(reminderTime);
 
     Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~");
-    Console.WriteLine("1.Add a new word(inside, choose which set or create new set).\n2.Practice.\n3.Crossword.\n4.Exit.");
+    Console.WriteLine("1.Add a new word.\n2.Practice.\n3.Crossword.\n4.Exit.");
     Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~");
     Console.WriteLine("Your choice:");
     int choice = Int32.Parse(Console.ReadLine());
@@ -32,8 +41,10 @@ while (true)
                 crossWord.PlaceAllWordsRandomly();
                 crossWord.PrintGrid();
                 Console.ReadLine();
+                crossWord.CheckTheWords();
+                Console.ReadLine();
             }
-            else 
+            else
             {
                 Console.WriteLine("File does not exist");
             }

@@ -1,5 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
-
+// REQUIREMENT #2: second class definition
 public class ListOfWords
 {
 

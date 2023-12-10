@@ -1,3 +1,6 @@
+// REQUIREMENT #1: Class definition
+
+// REQUIREMENT #6 inheritance 
 public class Practice : ListOfWords
 {
     ListOfWords list = new ListOfWords();

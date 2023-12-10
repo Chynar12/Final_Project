@@ -1,6 +1,6 @@
 using System.Data;
 using System.Security.Cryptography;
-
+//REQUIREMENT #3: third class definition
 public class CrossWord
 {
     List<string> justWords = new List<string>();
@@ -10,8 +10,9 @@ public class CrossWord
     public string word;
     public char[,] grid;
 
-    public int Row {get; }
-    public int Column{get; }
+    //REQUIREMENT #11 properties 
+    public int Row { get; }
+    public int Column { get; }
 
 
     public CrossWord(string[] words, int row = 15, int column = 15)
@@ -31,11 +32,22 @@ public class CrossWord
         var counter = justWords.Count();
         for (int i = 0; i < counter; i++)
         {
-            var rowIndexRandom = randomNumber.Next(0, 10);
-            var columnIndexRandom = randomNumber.Next(0, 10);
-            string oneWord = GetRandomWordFromList();
-            PlaceWordHorizontal(oneWord, rowIndexRandom, columnIndexRandom);
+            if (i % 2 == 0)
+            {
+                string oneWord = GetRandomWordFromList();
+                var rowIndexRandom = randomNumber.Next(0, Row);
+                var columnIndexRandom = randomNumber.Next(0, Column - oneWord.Length);
+                PlaceWordHorizontal(oneWord, rowIndexRandom, columnIndexRandom);
+            }
+            else
+            {
+                string oneWord = GetRandomWordFromList();
+                var rowIndexRandom = randomNumber.Next(0, Row - oneWord.Length);
+                var columnIndexRandom = randomNumber.Next(0, Column- oneWord.Length);
+                PlaceWordVertical(oneWord, rowIndexRandom, columnIndexRandom);
+            }
         }
+
     }
 
     public char[,] CreateGrid()
@@ -58,19 +70,38 @@ public class CrossWord
         if (input.Length + columnIndexRandom > Row)
         {
             int outside = Column - 1 - columnIndexRandom;
-            throw new Exception($"\n the word u try to enter is {input}, last column of word is: {input[outside]} last valid column is: {Column - 1}");
+
+            // REQUIREMENT #9: throwing an exception and properly catching it
+            throw new Exception($"\n the word u try to enter is {input}, last column of word is: {outside} last valid column is: {Column - 1}");
+            
         }
         else
         {
             for (int i = 0; i < input.Length; i++)
             {
-                grid[rowIndexRandom, columnIndexRandom + i] = input[i];
+                grid[rowIndexRandom, columnIndexRandom + i] = '_';
             }
 
         }
     }
 
 
+    public void PlaceWordVertical(string input, int rowIndexRandom, int columnIndexRandom)
+    {
+        if (input.Length + rowIndexRandom > Column)
+        {
+            int outside = Row - 1 - rowIndexRandom;
+            throw new Exception($"\n the word u try to enter is {input}, last column of word is: {outside} last valid column is: {Row - 1}");
+        }
+        else
+        {
+            for (int i = 0; i < input.Length; i++)
+            {
+                grid[rowIndexRandom + i, columnIndexRandom] = '_';
+            }
+
+        }
+    }
 
     public void PrintGrid()
     {
@@ -93,16 +124,12 @@ public class CrossWord
 
     public List<string> GetWordsForCrossWord(string[] listOfWords)
     {
-            for (int i = 0; i < listOfWords.Length; i++)
-            {
-                string[] wordsSplited = listOfWords[i].Split("-");
-                string word1 = wordsSplited[0];
-                justWords.Add(word1);
-            }
-            foreach (string word2 in justWords)
-            {
-                Console.WriteLine(word2);
-            }
+        for (int i = 0; i < listOfWords.Length; i++)
+        {
+            string[] wordsSplited = listOfWords[i].Split("-");
+            string word1 = wordsSplited[0];
+            justWords.Add(word1);
+        }
 
         return justWords;
     }
@@ -112,10 +139,24 @@ public class CrossWord
     {
         int numberOfWords = justWords.Count();
         randomNumberForChoosingTheWord = randomNumber.Next(0, numberOfWords);
-        Console.WriteLine($"the random num for word {randomNumberForChoosingTheWord}");
-        Console.WriteLine($"the word chosen {justWords[randomNumberForChoosingTheWord]}");
         string word = justWords[randomNumberForChoosingTheWord];
         justWords.Remove(word);
         return word;
+    }
+    public void CheckTheWords()
+    {
+        for (int i = 0; i < justWords.Count(); i++)
+        {
+            Console.WriteLine("Enter the word");
+            var check = Console.ReadLine();
+            if (justWords.Contains(check))
+            {
+                Console.WriteLine("Correct!");
+            }
+            else
+            {
+                Console.WriteLine("Crossword does not contain that word");
+            }
+        }
     }
 }
